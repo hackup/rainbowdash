@@ -201,10 +201,6 @@ void loop() {
 					while (times-->0) {
 						Serial.write("RainbowDashboard 1.0\n(c) Kreative Software\n");
 					}
-				} else {
-					while (1) {
-						Serial.write("RainbowDashboard 1.0\n(c) Kreative Software\n");
-					}
 				}
 				cmdbuf[0] = 0;
 			}
