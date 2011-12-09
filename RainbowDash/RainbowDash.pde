@@ -79,6 +79,7 @@ unsigned char display_whichbuf = 0;
 unsigned char working_whichbuf = 1;
 unsigned char cmdbuf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 unsigned char bufpos = 0;
+boolean handshake_mode = 1;
 
 void setup() {
 	video_set_buffer(buffer[0]);
@@ -88,6 +89,34 @@ void setup() {
 
 void loop() {
 	video_loop();
+
+        if (handshake_mode) {
+            if (Serial.available() > 0) {
+                for (char i=7; i>0; i--) {
+                    cmdbuf[i] = cmdbuf[i-1];
+                }
+                cmdbuf[0] = Serial.read();
+                if (0 == strncmp((const char*)cmdbuf, "pukcah", 6)) {
+                    cmdbuf[0] = 0;
+                    handshake_mode = 0;
+                    Serial.write("hackup.net\n");
+
+                    // blank screen
+                    cmdbuf[0] = 0x72;
+                    cmdbuf[1] = 0x03;
+                    cmdbuf[2] = 0;
+                    cmdbuf[3] = 0;
+                    cmdbuf[4] = 0;
+                    cmdbuf[5] = 0;
+                    cmdbuf[6] = 0;
+                    cmdbuf[7] = 0;
+                    do_long_command(buffer[0], &display_whichbuf, &working_whichbuf, 2, cmdbuf);
+                    cmdbuf[0] = 0;
+                }
+            }
+            return;
+        }
+
 	if (!cmdbuf[0]) {
 		if (Serial.available() > 0) {
 			cmdbuf[0] = Serial.read();
