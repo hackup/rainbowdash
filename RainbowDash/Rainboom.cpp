@@ -138,7 +138,7 @@ static unsigned char internal_buffer[2][96] = {
 static unsigned char internal_workingbuf = 1;
 static unsigned char internal_bufpos = 0;
 static unsigned char internal_row = 0;
-static unsigned char internal_column = 0;
+static unsigned char internal_column = 7;
 
 static unsigned char * external_buffer = 0;
 static unsigned char * external_next_buffer = 0;
@@ -159,16 +159,16 @@ void video_setup(void) {
 
 void video_loop(void) {
 	unsigned char r0, r1, g0, g1, b0, b1;
-	get_color(external_buffer, internal_row, internal_column++);
+	get_color(external_buffer, internal_row, internal_column--);
 	r0 = get_color_r; g0 = get_color_g; b0 = get_color_b;
-	get_color(external_buffer, internal_row, internal_column++);
+	get_color(external_buffer, internal_row, internal_column--);
 	r1 = get_color_r; g1 = get_color_g; b1 = get_color_b;
 	internal_buffer[internal_workingbuf][internal_bufpos       ] = (g0 & 0xF0) | (g1 >> 4);
 	internal_buffer[internal_workingbuf][internal_bufpos | 0x20] = (r0 & 0xF0) | (r1 >> 4);
 	internal_buffer[internal_workingbuf][internal_bufpos | 0x40] = (b0 & 0xF0) | (b1 >> 4);
 	internal_bufpos++;
 	if (internal_column >= 8) {
-		internal_column = 0;
+		internal_column = 7;
 		internal_row++;
 		if (internal_row >= 8) {
 			internal_row = 0;
